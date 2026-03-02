@@ -16,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { register } from '@/lib/actions/auth.action';
 import { RegisterInput, registerSchema } from '@/lib/schemas/auth.schema';
-import { simLoading } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader } from 'lucide-react';
 import { useTransition } from 'react';
@@ -40,7 +40,7 @@ export default function RegisterForm() {
 
   const onSubmit = (data: RegisterInput) => {
     startTransition(async () => {
-      await simLoading();
+      await register(data);
     });
   };
 
