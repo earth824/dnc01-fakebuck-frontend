@@ -8,7 +8,10 @@ type RequestOptions = {
 
 const BACKEND_URL = serverEnv.BACKEND_URL;
 
-const apiFetch = async (url: string, options: RequestOptions = {}) => {
+const apiFetch = async <T>(
+  url: string,
+  options: RequestOptions = {}
+): Promise<T> => {
   const { method = 'GET', body } = options;
 
   const headers: Record<string, string> = {};
@@ -32,17 +35,17 @@ const apiFetch = async (url: string, options: RequestOptions = {}) => {
     throw new ApiError(error.message, error.code, error.details);
   }
 
-  return res.json();
+  return (await res.json()).data;
 };
 
-const get = (url: string) => apiFetch(url);
-const post = (url: string, body?: unknown) =>
-  apiFetch(url, { method: 'POST', body });
-const put = (url: string, body?: unknown) =>
-  apiFetch(url, { method: 'PUT', body });
-const patch = (url: string, body?: unknown) =>
-  apiFetch(url, { method: 'PATCH', body });
-const del = (url: string) => apiFetch(url, { method: 'DELETE' });
+const get = <T>(url: string) => apiFetch<T>(url);
+const post = <T>(url: string, body?: unknown) =>
+  apiFetch<T>(url, { method: 'POST', body });
+const put = <T>(url: string, body?: unknown) =>
+  apiFetch<T>(url, { method: 'PUT', body });
+const patch = <T>(url: string, body?: unknown) =>
+  apiFetch<T>(url, { method: 'PATCH', body });
+const del = <T>(url: string) => apiFetch<T>(url, { method: 'DELETE' });
 
 export const api = {
   get,

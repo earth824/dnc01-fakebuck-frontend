@@ -1,6 +1,6 @@
 export class ApiError extends Error {
   constructor(
-    message: string,
+    public message: string,
     public code?: string,
     public details?: Record<string, unknown>
   ) {

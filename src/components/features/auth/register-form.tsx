@@ -24,7 +24,7 @@ import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 export default function RegisterForm() {
-  const { handleSubmit, control } = useForm<RegisterInput>({
+  const { handleSubmit, control, setError } = useForm<RegisterInput>({
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -40,7 +40,10 @@ export default function RegisterForm() {
 
   const onSubmit = (data: RegisterInput) => {
     startTransition(async () => {
-      await register(data);
+      const res = await register(data);
+      if (!res.success && res.code === 'EMAIL_ALREADY_EXISTS') {
+        setError('email', { message: res.message });
+      }
     });
   };
 
