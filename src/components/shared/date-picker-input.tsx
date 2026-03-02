@@ -9,17 +9,36 @@ import {
 } from '@/components/ui/popover';
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
-export default function DatePickerInput() {
-  const [date, setDate] = useState<Date | undefined>();
+type DatePickerInputProps = {
+  id: string;
+  isValid: boolean;
+  value: Date;
+  onValueChange: (...event: unknown[]) => void;
+};
+
+export default function DatePickerInput({
+  id,
+  isValid,
+  value,
+  onValueChange
+}: DatePickerInputProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="justify-start px-3 font-normal">
-          {date ? (
-            format(date, 'dd MMMM yyyy')
+        <Button
+          variant="outline"
+          className={cn(
+            'justify-start px-3 font-normal',
+            !isValid && 'border-destructive'
+          )}
+          id={id}
+        >
+          {value ? (
+            format(value, 'dd MMMM yyyy')
           ) : (
             <span className="text-muted-foreground">Select date of birth</span>
           )}
@@ -29,9 +48,9 @@ export default function DatePickerInput() {
         <Calendar
           mode="single"
           captionLayout="dropdown"
-          selected={date}
+          selected={value}
           onSelect={(date) => {
-            setDate(date);
+            onValueChange(date);
             setOpen(false);
           }}
         />

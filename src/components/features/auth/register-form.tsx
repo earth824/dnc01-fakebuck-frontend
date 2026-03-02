@@ -1,6 +1,13 @@
+'use client';
+
 import DatePickerInput from '@/components/shared/date-picker-input';
 import { Button } from '@/components/ui/button';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -9,61 +16,173 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { RegisterInput, registerSchema } from '@/lib/schemas/auth.schema';
+import { simLoading } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader } from 'lucide-react';
+import { useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 export default function RegisterForm() {
+  const { handleSubmit, control } = useForm<RegisterInput>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      dob: undefined,
+      gender: undefined,
+      email: '',
+      password: ''
+    },
+    resolver: zodResolver(registerSchema)
+  });
+
+  const [isPending, startTransition] = useTransition();
+
+  const onSubmit = (data: RegisterInput) => {
+    startTransition(async () => {
+      await simLoading();
+    });
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup className="gap-4">
         <div className="grid grid-cols-2 gap-2">
           {/* First name */}
-          <Field>
-            <FieldLabel>First Name</FieldLabel>
-            <Input placeholder="First Name" />
-          </Field>
+          <Controller
+            control={control}
+            name="firstName"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="First Name"
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
 
           {/* Last name */}
-          <Field>
-            <FieldLabel>Last Name</FieldLabel>
-            <Input placeholder="Last Name" />
-          </Field>
+          <Controller
+            control={control}
+            name="lastName"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="Last Name"
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
         </div>
 
         {/* Date of birth */}
-        <Field>
-          <FieldLabel>Date of birth</FieldLabel>
-          <DatePickerInput />
-        </Field>
+        <Controller
+          control={control}
+          name="dob"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Date of birth</FieldLabel>
+              <DatePickerInput
+                id={field.name}
+                isValid={!fieldState.invalid}
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            </Field>
+          )}
+        />
 
         {/* Gender */}
-        <Field>
-          <FieldLabel>Gender</FieldLabel>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select your gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="FEMALE">Female</SelectItem>
-              <SelectItem value="MALE">Male</SelectItem>
-              <SelectItem value="OTHER">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
+        <Controller
+          control={control}
+          name="gender"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Gender</FieldLabel>
+              <Select
+                name={field.name}
+                value={field.value ?? ''}
+                onValueChange={field.onChange}
+              >
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder="Select your gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="FEMALE">Female</SelectItem>
+                  <SelectItem value="MALE">Male</SelectItem>
+                  <SelectItem value="OTHER">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
         {/* Email */}
-        <Field>
-          <FieldLabel>Email</FieldLabel>
-          <Input placeholder="Email" />
-        </Field>
+        <Controller
+          control={control}
+          name="email"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                placeholder="Email"
+                aria-invalid={fieldState.invalid}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
         {/* Password */}
-        <Field>
-          <FieldLabel>Password</FieldLabel>
-          <Input placeholder="Password" type="password" />
-        </Field>
+        <Controller
+          control={control}
+          name="password"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                placeholder="Password"
+                aria-invalid={fieldState.invalid}
+                type="password"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
         {/* Submit button */}
         <Field>
-          <Button className="rounded-full">Submit</Button>
+          <Button className="rounded-full" disabled={isPending}>
+            {isPending ? (
+              <>
+                <Loader className="animate-spin" /> Creating your account ...
+              </>
+            ) : (
+              'Submit'
+            )}
+          </Button>
         </Field>
       </FieldGroup>
     </form>
