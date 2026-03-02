@@ -1,9 +1,38 @@
+import LogInForm from '@/components/features/auth/login-form';
+import { Button } from '@/components/ui/button';
 import { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Login'
 };
 
 export default function LoginPage() {
-  return <div>LoginPage</div>;
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      <div className="max-w-xl w-full px-8">
+        <div className="flex justify-center">
+          <Image src="/logo.png" alt="Fakebuck" width={60} height={60} />
+        </div>
+
+        <h2 className="text-lg font-medium my-6">Log in to Fakebuck</h2>
+
+        <LogInForm />
+
+        <div className="mt-12">
+          <Button
+            className="w-full rounded-full border-primary text-primary hover:text-primary"
+            variant="outline"
+          >
+            <Link href="/register">Create new account</Link>
+          </Button>
+        </div>
+
+        <div className="mt-6 flex justify-center">
+          <Image src="/meta.svg" alt="Meta" width={60} height={12} />
+        </div>
+      </div>
+    </div>
+  );
 }
