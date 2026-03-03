@@ -1,3 +1,4 @@
+import ProfileHeader from '@/components/features/profile/profile-header';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -5,5 +6,9 @@ export const metadata: Metadata = {
 };
 
 export default function ProfilePage() {
-  return <div>ProfilePage</div>;
+  return (
+    <div>
+      <ProfileHeader />
+    </div>
+  );
 }

@@ -3,7 +3,7 @@
 import { ActionResult } from '@/lib/actions/action.type';
 import { formatActionError } from '@/lib/actions/action.util';
 import { authService } from '@/lib/api/auth/auth.service';
-import { signIn } from '@/lib/auth/auth';
+import { signIn, signOut } from '@/lib/auth/auth';
 import { LoginInput, RegisterInput } from '@/lib/schemas/auth.schema';
 import { redirect } from 'next/navigation';
 
@@ -23,4 +23,8 @@ export const login = async (input: LoginInput): Promise<ActionResult> => {
     return { success: false, code: 'INVALID_CREDENTIALS' };
   }
   redirect('/');
+};
+
+export const logout = async () => {
+  await signOut({ redirectTo: '/login' });
 };
