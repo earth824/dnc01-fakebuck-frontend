@@ -6,8 +6,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        const { user, accessToken } = await authService.login(credentials);
-        return { ...user, accessToken };
+        const { user, accessToken, expiresIn } =
+          await authService.login(credentials);
+        return { ...user, accessToken, expiresIn };
       }
     })
   ],
@@ -18,6 +19,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.firstName = user.firstName;
         token.lastName = user.lastName;
         token.accessToken = user.accessToken;
+        token.accessTokenExpiresAt =
+          Date.now() + ((user.expiresIn ?? 0) - 3) * 1000;
+      }
+
+      if (
+        token.accessTokenExpiresAt &&
+        Date.now() > token.accessTokenExpiresAt
+      ) {
+        return null;
       }
 
       return token;
@@ -27,6 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.firstName = token.firstName;
       session.user.lastName = token.lastName;
       session.user.avatarUrl = token.avatarUrl;
+      session.user.id = token.sub;
 
       return session;
     }

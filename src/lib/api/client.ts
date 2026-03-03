@@ -1,6 +1,7 @@
 import { serverEnv } from '@/config/env.validation';
 import { ApiError } from '@/lib/api/api.error';
 import { auth } from '@/lib/auth/auth';
+import { redirect } from 'next/navigation';
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -8,6 +9,8 @@ type RequestOptions = {
 };
 
 const BACKEND_URL = serverEnv.BACKEND_URL;
+
+const UNAUTHORIZED_CODE = ['INVALID_TOKEN', 'TOKEN_EXPIRED'] as const;
 
 const apiFetch = async <T>(
   url: string,
@@ -37,6 +40,11 @@ const apiFetch = async <T>(
 
   if (!res.ok) {
     const error = await res.json();
+
+    if (res.status === 401 && UNAUTHORIZED_CODE.includes(error.code)) {
+      redirect('/api/proxy/clear-session');
+    }
+
     throw new ApiError(error.message, error.code, error.details);
   }
 
