@@ -9,50 +9,82 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { uploadCover } from '@/lib/actions/user.action';
-import { FileImage } from 'lucide-react';
+import { ActionResult } from '@/lib/actions/action.type';
+import { FileImage, Loader } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { ReactNode, useRef, useState, useTransition } from 'react';
 
 type ImageUploadDialogProps = {
+  initialUrl?: string | null;
   trigger: ReactNode;
+  title: string;
+  onUpload: (file: File) => Promise<ActionResult>;
 };
 
-export default function ImageUploadDialog({ trigger }: ImageUploadDialogProps) {
+export default function ImageUploadDialog({
+  trigger,
+  initialUrl,
+  title,
+  onUpload
+}: ImageUploadDialogProps) {
   const fileInputEl = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [open, setOpen] = useState(false);
 
   const [isPending, startTransition] = useTransition();
+
+  const router = useRouter();
 
   const handleClickUpload = () => {
     startTransition(async () => {
       if (file) {
-        await uploadCover(file);
+        await onUpload(file);
+        setOpen(false);
+        setFile(null);
+        router.refresh();
       }
     });
   };
 
+  const imageUrl = file ? URL.createObjectURL(file) : initialUrl;
+
   return (
     <>
+      {isPending && (
+        <div className="fixed inset-0 bg-black/40 z-100 flex justify-center items-center">
+          <Loader className="animate-spin text-primary" />
+        </div>
+      )}
       <Dialog
+        open={open}
         onOpenChange={(current) => {
           if (current === false) {
             setFile(null);
             if (fileInputEl.current) fileInputEl.current.value = '';
           }
+          setOpen(current);
         }}
       >
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="sm:max-w-3xl">
+        <DialogContent
+          className="sm:max-w-3xl"
+          onInteractOutside={(e) => {
+            if (isPending) e.preventDefault();
+          }}
+          onEscapeKeyDown={(e) => {
+            if (isPending) e.preventDefault();
+          }}
+        >
           <DialogHeader>
-            <DialogTitle>Edit cover photo</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
           <div>
             <div className="relative aspect-1095/405 rounded-lg overflow-hidden bg-muted flex justify-center items-center">
-              {file ? (
+              {imageUrl ? (
                 <Image
                   alt="cover"
-                  src={URL.createObjectURL(file)}
+                  src={imageUrl}
                   fill
                   className="object-cover"
                 />
@@ -72,6 +104,7 @@ export default function ImageUploadDialog({ trigger }: ImageUploadDialogProps) {
               <Button
                 onClick={() => fileInputEl.current?.click()}
                 variant="outline"
+                disabled={isPending}
               >
                 Choose photo
               </Button>

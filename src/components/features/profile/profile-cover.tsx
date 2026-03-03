@@ -1,23 +1,39 @@
 import ImageUploadDialog from '@/components/features/profile/image-upload-dialog';
 import { Button } from '@/components/ui/button';
+import { uploadCover } from '@/lib/actions/user.action';
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
 
-export default function ProfileCover() {
+type ProfileCoverProps = {
+  coverUrl: string | null;
+  canEdit?: boolean;
+};
+
+export default function ProfileCover({
+  coverUrl,
+  canEdit = false
+}: ProfileCoverProps) {
   return (
-    <div className="relative max-w-273 aspect-1095/405 mx-auto rounded-b-2xl overflow-hidden">
-      <Image alt="cover" src="/cover.jpeg" fill className="object-cover" />
-      <ImageUploadDialog
-        trigger={
-          <Button
-            className="absolute bottom-4 right-4 bg-background"
-            variant="outline"
-          >
-            <Camera />
-            Edit cover photo
-          </Button>
-        }
-      />
+    <div className="relative max-w-273 aspect-1095/405 mx-auto rounded-b-2xl overflow-hidden border bg-muted">
+      {coverUrl && (
+        <Image alt="cover" src={coverUrl} fill className="object-cover" />
+      )}
+      {canEdit && (
+        <ImageUploadDialog
+          trigger={
+            <Button
+              className="absolute bottom-4 right-4 bg-background"
+              variant="outline"
+            >
+              <Camera />
+              Edit cover photo
+            </Button>
+          }
+          initialUrl={coverUrl}
+          title="Edit cover photo"
+          onUpload={uploadCover}
+        />
+      )}
     </div>
   );
 }

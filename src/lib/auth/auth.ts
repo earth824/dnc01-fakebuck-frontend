@@ -2,7 +2,7 @@ import { authService } from '@/lib/api/auth/auth.service';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -13,7 +13,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     })
   ],
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       if (user) {
         token.avatarUrl = user.avatarUrl;
         token.firstName = user.firstName;
@@ -28,6 +28,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         Date.now() > token.accessTokenExpiresAt
       ) {
         return null;
+      }
+
+      if (trigger === 'update' && session) {
+        token.avatarUrl = session.user.avatarUrl;
       }
 
       return token;
