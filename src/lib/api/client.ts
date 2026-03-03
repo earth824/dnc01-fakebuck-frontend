@@ -1,5 +1,6 @@
 import { serverEnv } from '@/config/env.validation';
 import { ApiError } from '@/lib/api/api.error';
+import { auth } from '@/lib/auth/auth';
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -13,10 +14,14 @@ const apiFetch = async <T>(
   options: RequestOptions = {}
 ): Promise<T> => {
   const { method = 'GET', body } = options;
+  const session = await auth();
 
   const headers: Record<string, string> = {};
   if (body && !(body instanceof FormData))
     headers['Content-type'] = 'application/json';
+
+  if (session?.user?.accessToken)
+    headers['Authorization'] = `Bearer ${session?.user?.accessToken}`;
 
   const config: RequestInit = {
     method,
