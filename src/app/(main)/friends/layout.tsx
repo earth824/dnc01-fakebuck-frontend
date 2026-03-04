@@ -8,7 +8,7 @@ export default function FriendLayout({
   return (
     <div className="flex">
       <FriendSidebar />
-      {/* <main>{children}</main> */}
+      <main className="ml-90 flex-1">{children}</main>
     </div>
   );
 }
