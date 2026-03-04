@@ -18,7 +18,6 @@ export default async function ProfilePage(
     : currentUser.id;
 
   const targetUser = await userService.getUserProfile(targetUserId);
-  console.log(targetUser);
 
   return (
     <div>

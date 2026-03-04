@@ -11,7 +11,7 @@ const NAVIGATION_ITEMS = [
 
 export default function MainNavigation() {
   const pathname = usePathname();
-  console.log(pathname);
+
   return (
     <div className="flex gap-1 justify-center items-center">
       {NAVIGATION_ITEMS.map((item) => (

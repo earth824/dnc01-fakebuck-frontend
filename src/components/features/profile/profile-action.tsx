@@ -1,15 +1,23 @@
 import ActionButton from '@/components/features/friend/action-button';
 import { ActionButtonProps } from '@/components/features/friend/friend.type';
+import {
+  acceptRequest,
+  cancelRequest,
+  rejectRequest,
+  sendRequest,
+  unfriend
+} from '@/lib/actions/friend.action';
 import { RelationshipStatus } from '@/lib/api/user/user.type';
 import { Check, Plus, Trash2 } from 'lucide-react';
 
 type ProfileActionProps = {
   relationshipStatus: RelationshipStatus;
+  targetUserId: string;
 };
 
 const FRIEND_ACTION_MAP: Record<
   Exclude<RelationshipStatus, 'SELF'>,
-  Partial<Record<'confirm' | 'cancel', ActionButtonProps>>
+  Partial<Record<'confirm' | 'cancel', Omit<ActionButtonProps, 'targetUserId'>>>
 > = {
   FRIEND: {
     cancel: {
@@ -18,7 +26,8 @@ const FRIEND_ACTION_MAP: Record<
           <Trash2 /> Unfriend
         </>
       ),
-      variant: 'destructive'
+      variant: 'destructive',
+      onClickAction: unfriend
     }
   },
   NONE: {
@@ -27,7 +36,8 @@ const FRIEND_ACTION_MAP: Record<
         <>
           <Plus /> Add friend
         </>
-      )
+      ),
+      onClickAction: sendRequest
     }
   },
   REQUEST_RECEIVED: {
@@ -36,7 +46,8 @@ const FRIEND_ACTION_MAP: Record<
         <>
           <Check /> Confirm
         </>
-      )
+      ),
+      onClickAction: acceptRequest
     },
     cancel: {
       children: (
@@ -44,7 +55,8 @@ const FRIEND_ACTION_MAP: Record<
           <Trash2 /> Delete
         </>
       ),
-      variant: 'outline'
+      variant: 'outline',
+      onClickAction: rejectRequest
     }
   },
   REQUEST_SENT: {
@@ -54,13 +66,15 @@ const FRIEND_ACTION_MAP: Record<
           <Trash2 /> Cancel request
         </>
       ),
-      variant: 'outline'
+      variant: 'outline',
+      onClickAction: cancelRequest
     }
   }
 };
 
 export default function ProfileAction({
-  relationshipStatus
+  relationshipStatus,
+  targetUserId
 }: ProfileActionProps) {
   if (relationshipStatus === 'SELF') return null;
 
@@ -69,12 +83,22 @@ export default function ProfileAction({
   return (
     <div className="flex items-center gap-2 pb-2">
       {confirm && (
-        <ActionButton variant={confirm.variant}>
+        <ActionButton
+          variant={confirm.variant}
+          onClickAction={confirm.onClickAction}
+          targetUserId={targetUserId}
+        >
           {confirm.children}
         </ActionButton>
       )}
       {cancel && (
-        <ActionButton variant={cancel.variant}>{cancel.children}</ActionButton>
+        <ActionButton
+          variant={cancel.variant}
+          onClickAction={cancel.onClickAction}
+          targetUserId={targetUserId}
+        >
+          {cancel.children}
+        </ActionButton>
       )}
     </div>
   );
