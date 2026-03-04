@@ -1,3 +1,4 @@
+import ProfileAction from '@/components/features/profile/profile-action';
 import ProfileAvatar from '@/components/features/profile/profile-avatar';
 import ProfileCover from '@/components/features/profile/profile-cover';
 import {
@@ -76,16 +77,7 @@ export default function ProfileHeader({
           </div>
 
           {/* Right: Action buttons */}
-          <div className="flex items-center gap-2 pb-2">
-            <Button className="font-semibold">
-              <Check className="size-4" />
-              Confirm
-            </Button>
-            <Button variant="outline" className="font-semibold">
-              <Trash2 className="size-4" />
-              Delete
-            </Button>
-          </div>
+          <ProfileAction relationshipStatus={relationshipStatus} />
         </div>
       </div>
     </div>
