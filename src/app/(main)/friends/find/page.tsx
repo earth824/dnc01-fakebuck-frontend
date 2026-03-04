@@ -14,7 +14,7 @@ export default async function FindFriendPage() {
         <h2 className="font-bold text-xl">People you may know</h2>
       </div>
       {/* FriendList */}
-      <FriendList users={noneRelationUsers} />
+      <FriendList users={noneRelationUsers} relationshipStatus="NONE" />
     </div>
   );
 }
