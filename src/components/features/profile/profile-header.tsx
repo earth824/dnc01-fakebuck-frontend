@@ -2,12 +2,6 @@ import FriendInfo from '@/components/features/profile/friend-info';
 import ProfileAction from '@/components/features/profile/profile-action';
 import ProfileAvatar from '@/components/features/profile/profile-avatar';
 import ProfileCover from '@/components/features/profile/profile-cover';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarImage
-} from '@/components/ui/avatar';
 
 import { RelationshipStatus, UserWithFriends } from '@/lib/api/user/user.type';
 
